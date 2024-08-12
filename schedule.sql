@@ -8,3 +8,6 @@ create table schedule
     registerDate datetime,
     updateDate datetime
 );
+
+-- id컬럼을 primary key로 설정하고 auto_increment적용
+alter table schedule add id int primary key auto_increment;
