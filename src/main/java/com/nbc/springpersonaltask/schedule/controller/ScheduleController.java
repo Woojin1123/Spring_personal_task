@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 @RestController
-@RequestMapping("/schedule/api")
+@RequestMapping("/todolist")
 public class ScheduleController {
     private final JdbcTemplate jdbcTemplate;
 
