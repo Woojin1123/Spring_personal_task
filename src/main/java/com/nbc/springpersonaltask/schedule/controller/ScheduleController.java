@@ -14,8 +14,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/schedule/api")
@@ -55,24 +58,25 @@ public class ScheduleController {
 
         return responseDto;
     }
+
     @GetMapping("/schedules")
-    public List<ScheduleResponseDto> getSchedules(@RequestParam(name = "manager",required = false) String manager,@RequestParam(name = "updateDate",required = false) String updateDate){
+    public List<ScheduleResponseDto> getSchedules(@RequestParam(name = "manager", required = false) String manager, @RequestParam(name = "updateDate", required = false) String updateDate) {
         String sql = "SELECT id,todo,manager,registerDate,updateDate FROM schedule WHERE true";
         List<String> param = new ArrayList<>();
-        if(manager != null){
+        if (manager != null) {
             sql = sql + " " + "AND manager = ?";
             param.add(manager);
         }
-        if(updateDate != null){
+        if (updateDate != null) {
             sql = sql + " " + "AND updateDate LIKE ?";
-            param.add(updateDate+"%");
+            param.add(updateDate + "%");
         }
 
         return jdbcTemplate.query(sql, new PreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps) throws SQLException {
-                for(int i = 0; i<param.size(); i++){
-                    ps.setString(i+1,param.get(i));
+                for (int i = 0; i < param.size(); i++) {
+                    ps.setString(i + 1, param.get(i));
                 }
             }
         }, new RowMapper<ScheduleResponseDto>() {
@@ -86,5 +90,54 @@ public class ScheduleController {
                 return new ScheduleResponseDto(id, todo, manager, registerDate, updateDate);
             }
         });
+    }
+
+    @PutMapping("/schedules/{id}")
+    public ScheduleResponseDto updateSchedule(@PathVariable int id, @RequestBody ScheduleRequestDto requestDto) {
+        Schedule schedule = findById(id);
+        if (schedule != null & requestDto.getPwd().equals(schedule.getPwd())) {
+            String sql = "UPDATE schedule SET manager = ?, todo = ? , updateDate = ? WHERE id = ?";
+            jdbcTemplate.update(sql, requestDto.getManager(), requestDto.getTodo(), currentTime(), id);
+            schedule.setUpdateDate(currentTime());
+            return new ScheduleResponseDto(schedule);
+        } else {
+            throw new IllegalArgumentException("해당 ID의 일정이 존재하지 않습니다.");
+        }
+    }
+
+    @DeleteMapping("/schedules/{id}")
+    public void deleteSchedule(@PathVariable int id, @RequestBody ScheduleRequestDto requestDto) {
+        Schedule schedule = findById(id);
+        if (schedule != null & requestDto.getPwd().equals(schedule.getPwd())) {
+            String sql = "DELETE";
+        }
+    }
+
+    private Schedule findById(int id) {
+        // DB 조회
+        String sql = "SELECT * FROM schedule WHERE id = ?";
+
+        return jdbcTemplate.query(sql, resultSet -> {
+            if (resultSet.next()) {
+                Schedule schedule = new Schedule();
+                schedule.setId(resultSet.getInt("id"));
+                schedule.setTodo(resultSet.getString("todo"));
+                schedule.setManager(resultSet.getString("manager"));
+                schedule.setPwd(resultSet.getString("pwd"));
+                schedule.setRegisterDate(resultSet.getString("registerDate"));
+                schedule.setUpdateDate(resultSet.getString("updateDate"));
+                return schedule;
+            } else {
+                return null;
+            }
+        }, id);
+    }
+
+    private String currentTime() {
+        Date today = new Date();
+        Locale currentLocale = new Locale("KOREAN", "KOREA");
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern, currentLocale);
+        return formatter.format(today);
     }
 }
