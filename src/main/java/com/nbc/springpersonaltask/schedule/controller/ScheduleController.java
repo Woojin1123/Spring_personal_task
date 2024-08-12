@@ -150,7 +150,7 @@ public class ScheduleController {
         }, id);
     }
 
-    private String currentTime() {
+    public static String currentTime() {
         Date today = new Date();
         Locale currentLocale = new Locale("KOREAN", "KOREA");
         String pattern = "yyyy-MM-dd HH:mm:ss";
