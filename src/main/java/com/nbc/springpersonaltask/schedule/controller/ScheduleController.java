@@ -3,6 +3,8 @@ package com.nbc.springpersonaltask.schedule.controller;
 import com.nbc.springpersonaltask.schedule.dto.ScheduleRequestDto;
 import com.nbc.springpersonaltask.schedule.dto.ScheduleResponseDto;
 import com.nbc.springpersonaltask.schedule.entity.Schedule;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,31 +34,40 @@ public class ScheduleController {
 
     @PostMapping("/schedules") //create니까 Post로 전송
     public ScheduleResponseDto createSchedule(@RequestBody ScheduleRequestDto requestDto) {
+        ResponseEntity responseEntity;
+        ScheduleResponseDto responseDto;
+        if(requestDto.getPwd().length()>64){
+            throw new IllegalArgumentException("비밀번호가 너무 깁니다.");
+        } else if (requestDto.getPwd().length() < 8) {
+            throw new IllegalArgumentException("비밀번호가 너무 짧습니다.");
+        }else {
 
-        Schedule schedule = new Schedule(requestDto);
-        schedule.setUpdateDate(currentTime());
-        schedule.setRegisterDate(currentTime());
+            Schedule schedule = new Schedule(requestDto);
+            schedule.setUpdateDate(currentTime());
+            schedule.setRegisterDate(currentTime());
 
-        KeyHolder keyholder = new GeneratedKeyHolder();
+            KeyHolder keyholder = new GeneratedKeyHolder();
 
-        String sql = "INSERT INTO schedule (todo,manager,pwd,registerDate,updateDate) VALUES(?,?,?,?,?)";
-        jdbcTemplate.update(con -> {
-                    PreparedStatement preparedStatement = con.prepareStatement(sql,
-                            Statement.RETURN_GENERATED_KEYS);
+            String sql = "INSERT INTO schedule (todo,manager,pwd,registerDate,updateDate) VALUES(?,?,?,?,?)";
+            jdbcTemplate.update(con -> {
+                        PreparedStatement preparedStatement = con.prepareStatement(sql,
+                                Statement.RETURN_GENERATED_KEYS);
 
-                    preparedStatement.setString(1, schedule.getTodo());
-                    preparedStatement.setString(2, schedule.getManager());
-                    preparedStatement.setString(3, schedule.getPwd());
-                    preparedStatement.setString(4, schedule.getRegisterDate());
-                    preparedStatement.setString(5, schedule.getUpdateDate());
-                    return preparedStatement;
-                },
-                keyholder);
+                        preparedStatement.setString(1, schedule.getTodo());
+                        preparedStatement.setString(2, schedule.getManager());
+                        preparedStatement.setString(3, schedule.getPwd());
+                        preparedStatement.setString(4, schedule.getRegisterDate());
+                        preparedStatement.setString(5, schedule.getUpdateDate());
+                        return preparedStatement;
+                    },
+                    keyholder);
 
-        int id = keyholder.getKey().intValue();
-        schedule.setId(id);
+            int id = keyholder.getKey().intValue();
+            schedule.setId(id);
 
-        ScheduleResponseDto responseDto = new ScheduleResponseDto(schedule);
+            responseDto = new ScheduleResponseDto(schedule);
+            responseEntity = new ResponseEntity(HttpStatus.CREATED);
+        }
 
         return responseDto;
     }
