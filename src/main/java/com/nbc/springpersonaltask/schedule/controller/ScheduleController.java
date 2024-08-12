@@ -34,6 +34,8 @@ public class ScheduleController {
     public ScheduleResponseDto createSchedule(@RequestBody ScheduleRequestDto requestDto) {
 
         Schedule schedule = new Schedule(requestDto);
+        schedule.setUpdateDate(currentTime());
+        schedule.setRegisterDate(currentTime());
 
         KeyHolder keyholder = new GeneratedKeyHolder();
 
@@ -106,10 +108,14 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/schedules/{id}")
-    public void deleteSchedule(@PathVariable int id, @RequestBody ScheduleRequestDto requestDto) {
+    public int deleteSchedule(@PathVariable int id, @RequestBody ScheduleRequestDto requestDto) {
         Schedule schedule = findById(id);
         if (schedule != null & requestDto.getPwd().equals(schedule.getPwd())) {
-            String sql = "DELETE";
+            String sql = "DELETE FROM schedule WHERE id = ?";
+            jdbcTemplate.update(sql,id);
+            return id;
+        }else{
+            throw new IllegalArgumentException("해당 ID의 일정이 존재하지 않습니다.");
         }
     }
 
