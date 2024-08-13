@@ -61,27 +61,27 @@ public class ManagerController {
     }
 
     @GetMapping("/managers")
-    public List<ManagerResponseDto> getManagers(@RequestParam(name = "managerId", required = false) Integer managerId) {
+    public List<ManagerResponseDto> getManagers() {
         String sql = "SELECT * FROM manager WHERE true";
-        if (managerId != null) {
-            sql += " AND id = ?";
-            try {
-                return List.of(jdbcTemplate.queryForObject(sql, new RowMapper<ManagerResponseDto>() {
-                    @Override
-                    public ManagerResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        int id = rs.getInt("id");
-                        String name = rs.getString("name");
-                        String email = rs.getString("email");
-                        String registerDate = rs.getString("registerDate");
-                        String updateDate = rs.getString("updateDate");
-                        return new ManagerResponseDto(id, name, email, registerDate, updateDate);
-                    }
-                }, managerId));
-            }catch(EmptyResultDataAccessException e){
-                return null; // 나중에 예외처리 구현
+        return jdbcTemplate.query(sql, new RowMapper<ManagerResponseDto>() {
+            @Override
+            public ManagerResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                String registerDate = rs.getString("registerDate");
+                String updateDate = rs.getString("updateDate");
+                return new ManagerResponseDto(id, name, email, registerDate, updateDate);
             }
-        } else {
-            return jdbcTemplate.query(sql, new RowMapper<ManagerResponseDto>() {
+        });
+    }
+
+    @GetMapping("/managers/{id}")
+    public ManagerResponseDto getManagersById(@PathVariable int id) {
+        String sql = "SELECT * FROM manager WHERE true";
+        sql += " AND id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, new RowMapper<ManagerResponseDto>() {
                 @Override
                 public ManagerResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                     int id = rs.getInt("id");
@@ -91,7 +91,9 @@ public class ManagerController {
                     String updateDate = rs.getString("updateDate");
                     return new ManagerResponseDto(id, name, email, registerDate, updateDate);
                 }
-            });
+            }, id);
+        } catch (EmptyResultDataAccessException e) {
+            return null; // 나중에 예외처리 구현
         }
     }
 }
