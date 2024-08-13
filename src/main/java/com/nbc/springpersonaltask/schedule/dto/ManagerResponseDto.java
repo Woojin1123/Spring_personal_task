@@ -17,4 +17,12 @@ public class ManagerResponseDto {
         this.registerDate = manager.getRegisterDate();
         this.updateDate = manager.getUpdateDate();
     }
+
+    public ManagerResponseDto(int id, String name, String email, String registerDate, String updateDate) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.registerDate = registerDate;
+        this.updateDate = updateDate;
+    }
 }

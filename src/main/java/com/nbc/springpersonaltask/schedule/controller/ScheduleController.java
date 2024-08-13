@@ -154,7 +154,6 @@ public class ScheduleController {
     public boolean managerExists(int managerId){
         String sql = "SELECT COUNT(*) FROM manager WHERE id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class , managerId);
-        System.out.println(count.intValue());
         if(count >= 1){
             return true;
         }else {

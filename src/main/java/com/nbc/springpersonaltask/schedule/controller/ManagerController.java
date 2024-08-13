@@ -4,12 +4,16 @@ import com.nbc.springpersonaltask.schedule.dto.ManagerRequestDto;
 import com.nbc.springpersonaltask.schedule.dto.ManagerResponseDto;
 import com.nbc.springpersonaltask.schedule.entity.Manager;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import static com.nbc.springpersonaltask.schedule.controller.ScheduleController.currentTime;
 
@@ -25,13 +29,10 @@ public class ManagerController {
     @PostMapping("/managers")
     public ManagerResponseDto createManager(@RequestBody ManagerRequestDto requestDto) {
         ManagerResponseDto responseDto;
-
         Manager manager = new Manager(requestDto);
         manager.setUpdateDate(currentTime());
         manager.setRegisterDate(currentTime());
-
         KeyHolder keyholder = new GeneratedKeyHolder();
-
         String sql = "INSERT INTO manager (name,email,registerDate,updateDate) SELECT ?,?,?,?    " +
                 "WHERE NOT EXISTS" +
                 "(SELECT 1 FROM manager WHERE name = ? AND email = ? )";
@@ -47,7 +48,7 @@ public class ManagerController {
                     preparedStatement.setString(6, manager.getEmail());
                     return preparedStatement;
                 },
-                keyholder) == 1) {
+                keyholder) == 1) { // jdbctemplate.update()는 영향받은 행의 갯수를 반환하므로 입력에 성공하면 responseDto 반환 수행
             int id = keyholder.getKey().intValue();
             manager.setId(id);
 
@@ -59,7 +60,43 @@ public class ManagerController {
     }
 
     @GetMapping("/managers")
-    public ManagerResponseDto getManagers(){
-        return null;
+    public List<ManagerResponseDto> getManagers(@RequestParam(name = "managerId", required = false) Integer managerId) {
+        String sql = "SELECT * FROM manager WHERE true";
+        if (managerId != null) {
+            sql += " AND id = ?";
+            return List.of(jdbcTemplate.queryForObject(sql, new RowMapper<ManagerResponseDto>() {
+                @Override
+                public ManagerResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    int id = rs.getInt("id");
+                    String name = rs.getString("name");
+                    String email = rs.getString("email");
+                    String registerDate = rs.getString("registerDate");
+                    String updateDate = rs.getString("updateDate");
+                    return new ManagerResponseDto(id, name, email, registerDate, updateDate);
+                }
+            }, managerId));
+        } else {
+            return jdbcTemplate.query(sql, new RowMapper<ManagerResponseDto>() {
+                @Override
+                public ManagerResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    int id = rs.getInt("id");
+                    String name = rs.getString("name");
+                    String email = rs.getString("email");
+                    String registerDate = rs.getString("registerDate");
+                    String updateDate = rs.getString("updateDate");
+                    return new ManagerResponseDto(id, name, email, registerDate, updateDate);
+                }
+            });
+        }
+    }
+
+    public boolean managerExists(String name, String email) {
+        String sql = "SELECT COUNT(*) FROM manager WHERE name = ? AND email = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name, email);
+        if (count >= 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
