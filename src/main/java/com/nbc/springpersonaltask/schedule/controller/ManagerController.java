@@ -3,6 +3,7 @@ package com.nbc.springpersonaltask.schedule.controller;
 import com.nbc.springpersonaltask.schedule.dto.ManagerRequestDto;
 import com.nbc.springpersonaltask.schedule.dto.ManagerResponseDto;
 import com.nbc.springpersonaltask.schedule.entity.Manager;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -64,17 +65,21 @@ public class ManagerController {
         String sql = "SELECT * FROM manager WHERE true";
         if (managerId != null) {
             sql += " AND id = ?";
-            return List.of(jdbcTemplate.queryForObject(sql, new RowMapper<ManagerResponseDto>() {
-                @Override
-                public ManagerResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    int id = rs.getInt("id");
-                    String name = rs.getString("name");
-                    String email = rs.getString("email");
-                    String registerDate = rs.getString("registerDate");
-                    String updateDate = rs.getString("updateDate");
-                    return new ManagerResponseDto(id, name, email, registerDate, updateDate);
-                }
-            }, managerId));
+            try {
+                return List.of(jdbcTemplate.queryForObject(sql, new RowMapper<ManagerResponseDto>() {
+                    @Override
+                    public ManagerResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        int id = rs.getInt("id");
+                        String name = rs.getString("name");
+                        String email = rs.getString("email");
+                        String registerDate = rs.getString("registerDate");
+                        String updateDate = rs.getString("updateDate");
+                        return new ManagerResponseDto(id, name, email, registerDate, updateDate);
+                    }
+                }, managerId));
+            }catch(EmptyResultDataAccessException e){
+                return null; // 나중에 예외처리 구현
+            }
         } else {
             return jdbcTemplate.query(sql, new RowMapper<ManagerResponseDto>() {
                 @Override
@@ -87,16 +92,6 @@ public class ManagerController {
                     return new ManagerResponseDto(id, name, email, registerDate, updateDate);
                 }
             });
-        }
-    }
-
-    public boolean managerExists(String name, String email) {
-        String sql = "SELECT COUNT(*) FROM manager WHERE name = ? AND email = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name, email);
-        if (count >= 1) {
-            return true;
-        } else {
-            return false;
         }
     }
 }

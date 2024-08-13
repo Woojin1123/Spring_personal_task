@@ -36,14 +36,14 @@ public class ScheduleController {
     public ScheduleResponseDto createSchedule(@RequestBody ScheduleRequestDto requestDto) {
         ResponseEntity responseEntity;
         ScheduleResponseDto responseDto;
-        if(!managerExists(requestDto.getManagerId())){
+        if (!managerExists(requestDto.getManagerId())) {
             throw new IllegalArgumentException("해당 manager가 존재하지 않습니다.");
         };
         if(requestDto.getPwd().length()>64){
             throw new IllegalArgumentException("비밀번호가 너무 깁니다.");
         } else if (requestDto.getPwd().length() < 8) {
             throw new IllegalArgumentException("비밀번호가 너무 짧습니다.");
-        }else {
+        } else {
             Schedule schedule = new Schedule(requestDto);
             schedule.setUpdateDate(currentTime());
             schedule.setRegisterDate(currentTime());
@@ -75,34 +75,44 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules")
-    public List<ScheduleResponseDto> getSchedules(@RequestParam(name = "manager", required = false) String manager, @RequestParam(name = "updateDate", required = false) String updateDate) {
-        String sql = "SELECT id,todo,manager,registerDate,updateDate FROM schedule WHERE true";
+    public List<ScheduleResponseDto> getSchedules(@RequestParam(name = "managerId", required = false) Integer managerId, @RequestParam(name = "updateDate", required = false) String updateDate,
+                                                  @RequestParam(name = "page",defaultValue = "0") int page, @RequestParam(name = "pagesize",defaultValue = "10") int pagesize) {
+        String sql = "SELECT s.id, s.todo, s.registerDate, s.updateDate, m.id, m.name " +
+                "FROM schedule s " +
+                "JOIN manager m on m.id = s.manager_id WHERE true";
         List<String> param = new ArrayList<>();
-        if (manager != null) {
-            sql = sql + " " + "AND manager = ?";
-            param.add(manager);
+        if (managerId != null) {
+            sql = sql + " " + "AND s.manager_id = ?";
+            param.add(managerId.toString());
         }
         if (updateDate != null) {
-            sql = sql + " " + "AND updateDate LIKE ?";
+            sql = sql + " " + "AND s.updateDate LIKE ?";
             param.add(updateDate + "%");
         }
-
+        sql += " LIMIT ? OFFSET ?";
+        List<Integer> pageParam = new ArrayList<>();
+        pageParam.add(pagesize);
+        pageParam.add(page*pagesize);
         return jdbcTemplate.query(sql, new PreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps) throws SQLException {
                 for (int i = 0; i < param.size(); i++) {
                     ps.setString(i + 1, param.get(i));
                 }
+                for (int i = param.size(); i < (param.size()+pageParam.size()); i++) {
+                    ps.setInt(i + 1, pageParam.get(i-param.size()));
+                }
             }
         }, new RowMapper<ScheduleResponseDto>() {
             @Override
             public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-                int id = rs.getInt("id");
-                String todo = rs.getString("todo");
-                int managerId = rs.getInt("manager_id");
-                String registerDate = rs.getString("registerDate");
-                String updateDate = rs.getString("updateDate");
-                return new ScheduleResponseDto(id, todo, managerId, registerDate, updateDate);
+                int id = rs.getInt("s.id");
+                String todo = rs.getString("s.todo");
+                int managerId = rs.getInt("m.id");
+                String registerDate = rs.getString("s.registerDate");
+                String updateDate = rs.getString("s.updateDate");
+                String managerName = rs.getString("m.name");
+                return new ScheduleResponseDto(id, todo, managerId, registerDate, updateDate,managerName);
             }
         });
     }
@@ -125,9 +135,9 @@ public class ScheduleController {
         Schedule schedule = findById(id);
         if (schedule != null & requestDto.getPwd().equals(schedule.getPwd())) {
             String sql = "DELETE FROM schedule WHERE id = ?";
-            jdbcTemplate.update(sql,id);
+            jdbcTemplate.update(sql, id);
             return id;
-        }else{
+        } else {
             throw new IllegalArgumentException("해당 ID의 일정이 존재하지 않습니다.");
         }
     }
@@ -151,12 +161,13 @@ public class ScheduleController {
             }
         }, id);
     }
-    public boolean managerExists(int managerId){
+
+    public boolean managerExists(int managerId) {
         String sql = "SELECT COUNT(*) FROM manager WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class , managerId);
-        if(count >= 1){
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, managerId);
+        if (count >= 1) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
