@@ -2,12 +2,14 @@ package com.nbc.springpersonaltask.schedule.dto;
 
 import com.nbc.springpersonaltask.schedule.entity.Schedule;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class ScheduleResponseDto {
     private int id;
     private String todo;
     private int managerId;
+    @Setter
     String managerName;
     private String registerDate;
     private String updateDate;

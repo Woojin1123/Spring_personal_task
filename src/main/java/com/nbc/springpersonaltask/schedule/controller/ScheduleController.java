@@ -66,8 +66,8 @@ public class ScheduleController {
 
             int id = keyholder.getKey().intValue();
             schedule.setId(id);
-
             responseDto = new ScheduleResponseDto(schedule);
+            setManagerName(responseDto,schedule.getManagerId());
             responseEntity = new ResponseEntity(HttpStatus.CREATED);
         }
 
@@ -120,13 +120,18 @@ public class ScheduleController {
     @PutMapping("/schedules/{id}")
     public ScheduleResponseDto updateSchedule(@PathVariable int id, @RequestBody ScheduleRequestDto requestDto) {
         Schedule schedule = findById(id);
-        if (schedule != null & requestDto.getPwd().equals(schedule.getPwd())) {
-            String sql = "UPDATE schedule SET manager_id = ?, todo = ? , updateDate = ? WHERE id = ?";
-            jdbcTemplate.update(sql, requestDto.getManagerId(), requestDto.getTodo(), currentTime(), id);
-            schedule.setUpdateDate(currentTime());
-            return new ScheduleResponseDto(schedule);
-        } else {
+        String time = currentTime();
+        if(schedule == null){
             throw new IllegalArgumentException("해당 ID의 일정이 존재하지 않습니다.");
+        } else if(requestDto.getPwd().equals(schedule.getPwd())){
+            String sql = "UPDATE schedule SET manager_id = ?, todo = ? , updateDate = ? WHERE id = ?";
+            jdbcTemplate.update(sql, requestDto.getManagerId(), requestDto.getTodo(), time, id);
+            schedule.setUpdateDate(time);
+            ScheduleResponseDto responseDto =  new ScheduleResponseDto(schedule);
+            setManagerName(responseDto,schedule.getManagerId());
+            return responseDto;
+        } else{
+            throw new IllegalArgumentException("비밀번호가 틀립니다");
         }
     }
 
@@ -170,6 +175,10 @@ public class ScheduleController {
         } else {
             return false;
         }
+    }
+    private void setManagerName(ScheduleResponseDto responseDto,int id){
+        responseDto.setManagerName(
+                jdbcTemplate.queryForObject("SELECT m.name FROM schedule s JOIN manager m on s.manager_id = m.id WHERE m.id = ? GROUP BY m.name",String.class,id));
     }
 
     public static String currentTime() {
