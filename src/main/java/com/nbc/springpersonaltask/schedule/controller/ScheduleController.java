@@ -89,6 +89,7 @@ public class ScheduleController {
             sql = sql + " " + "AND s.updateDate LIKE ?";
             param.add(updateDate + "%");
         }
+        sql += " ORDER BY s.updateDate DESC";
         sql += " LIMIT ? OFFSET ?";
         List<Integer> pageParam = new ArrayList<>();
         pageParam.add(pagesize);
@@ -115,6 +116,13 @@ public class ScheduleController {
                 return new ScheduleResponseDto(id, todo, managerId, registerDate, updateDate,managerName);
             }
         });
+    }
+    @GetMapping("/schedules/{id}") //선택한 일정 조회
+    public ScheduleResponseDto choiceSchedule(@PathVariable int id){
+        Schedule schedule = findById(id);
+        ScheduleResponseDto responseDto =  new ScheduleResponseDto(schedule);
+        setManagerName(responseDto,schedule.getManagerId());
+        return responseDto;
     }
 
     @PutMapping("/schedules/{id}")
