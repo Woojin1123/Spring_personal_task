@@ -7,7 +7,7 @@ import lombok.Getter;
 public class ScheduleResponseDto {
     private int id;
     private String todo;
-    private String manager;
+    private int managerId;
     private String registerDate;
     private String updateDate;
 
@@ -15,15 +15,15 @@ public class ScheduleResponseDto {
     public ScheduleResponseDto(Schedule schedule) {
         this.id = schedule.getId();
         this.todo = schedule.getTodo();
-        this.manager = schedule.getManager();
+        this.managerId = schedule.getManagerId();
         this.registerDate = schedule.getRegisterDate();
         this.updateDate = schedule.getUpdateDate();
     }
 
-    public ScheduleResponseDto(int id, String todo, String manager, String registerDate, String updateDate) {
+    public ScheduleResponseDto(int id, String todo, int managerId, String registerDate, String updateDate) {
         this.id = id;
         this.todo = todo;
-        this.manager = manager;
+        this.managerId = managerId;
         this.registerDate = registerDate;
         this.updateDate = updateDate;
     }

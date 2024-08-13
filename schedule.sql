@@ -23,8 +23,6 @@ CREATE TABLE manager
     registerDate DATETIME,
     updateDate DATETIME
 );
-
--- manager_id 를 외래키로 manager의 id참조
 ALTER TABLE schedule ADD COLUMN manager_id int;
-
-ALTER TABLE schedule ADD FOREIGN KEY(manager_id) references manager(id);
+-- schedule에서 이름 대신 ID번호로 일정 저장
+ALTER TABLE schedule DROP COLUMN manager;

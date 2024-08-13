@@ -36,25 +36,27 @@ public class ScheduleController {
     public ScheduleResponseDto createSchedule(@RequestBody ScheduleRequestDto requestDto) {
         ResponseEntity responseEntity;
         ScheduleResponseDto responseDto;
+        if(!managerExists(requestDto.getManagerId())){
+            throw new IllegalArgumentException("해당 manager가 존재하지 않습니다.");
+        };
         if(requestDto.getPwd().length()>64){
             throw new IllegalArgumentException("비밀번호가 너무 깁니다.");
         } else if (requestDto.getPwd().length() < 8) {
             throw new IllegalArgumentException("비밀번호가 너무 짧습니다.");
         }else {
-
             Schedule schedule = new Schedule(requestDto);
             schedule.setUpdateDate(currentTime());
             schedule.setRegisterDate(currentTime());
 
             KeyHolder keyholder = new GeneratedKeyHolder();
 
-            String sql = "INSERT INTO schedule (todo,manager,pwd,registerDate,updateDate) VALUES(?,?,?,?,?)";
+            String sql = "INSERT INTO schedule (todo,manager_id,pwd,registerDate,updateDate) VALUES(?,?,?,?,?)";
             jdbcTemplate.update(con -> {
                         PreparedStatement preparedStatement = con.prepareStatement(sql,
                                 Statement.RETURN_GENERATED_KEYS);
 
                         preparedStatement.setString(1, schedule.getTodo());
-                        preparedStatement.setString(2, schedule.getManager());
+                        preparedStatement.setInt(2, schedule.getManagerId());
                         preparedStatement.setString(3, schedule.getPwd());
                         preparedStatement.setString(4, schedule.getRegisterDate());
                         preparedStatement.setString(5, schedule.getUpdateDate());
@@ -97,10 +99,10 @@ public class ScheduleController {
             public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 int id = rs.getInt("id");
                 String todo = rs.getString("todo");
-                String manager = rs.getString("manager");
+                int managerId = rs.getInt("manager_id");
                 String registerDate = rs.getString("registerDate");
                 String updateDate = rs.getString("updateDate");
-                return new ScheduleResponseDto(id, todo, manager, registerDate, updateDate);
+                return new ScheduleResponseDto(id, todo, managerId, registerDate, updateDate);
             }
         });
     }
@@ -109,8 +111,8 @@ public class ScheduleController {
     public ScheduleResponseDto updateSchedule(@PathVariable int id, @RequestBody ScheduleRequestDto requestDto) {
         Schedule schedule = findById(id);
         if (schedule != null & requestDto.getPwd().equals(schedule.getPwd())) {
-            String sql = "UPDATE schedule SET manager = ?, todo = ? , updateDate = ? WHERE id = ?";
-            jdbcTemplate.update(sql, requestDto.getManager(), requestDto.getTodo(), currentTime(), id);
+            String sql = "UPDATE schedule SET manager_id = ?, todo = ? , updateDate = ? WHERE id = ?";
+            jdbcTemplate.update(sql, requestDto.getManagerId(), requestDto.getTodo(), currentTime(), id);
             schedule.setUpdateDate(currentTime());
             return new ScheduleResponseDto(schedule);
         } else {
@@ -139,7 +141,7 @@ public class ScheduleController {
                 Schedule schedule = new Schedule();
                 schedule.setId(resultSet.getInt("id"));
                 schedule.setTodo(resultSet.getString("todo"));
-                schedule.setManager(resultSet.getString("manager"));
+                schedule.setManagerId(resultSet.getInt("manager_id"));
                 schedule.setPwd(resultSet.getString("pwd"));
                 schedule.setRegisterDate(resultSet.getString("registerDate"));
                 schedule.setUpdateDate(resultSet.getString("updateDate"));
@@ -148,6 +150,16 @@ public class ScheduleController {
                 return null;
             }
         }, id);
+    }
+    public boolean managerExists(int managerId){
+        String sql = "SELECT COUNT(*) FROM manager WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class , managerId);
+        System.out.println(count.intValue());
+        if(count >= 1){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     public static String currentTime() {
