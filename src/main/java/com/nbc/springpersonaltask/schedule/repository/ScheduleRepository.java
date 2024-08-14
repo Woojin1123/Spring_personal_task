@@ -25,10 +25,6 @@ public class ScheduleRepository { // DB접근 관련 기능 수행하는 클래�
   }
 
   public Schedule save(Schedule schedule) {
-    ScheduleResponseDto responseDto;
-    schedule.setUpdateDate(util.currentTime());
-    schedule.setRegisterDate(util.currentTime());
-
     KeyHolder keyholder = new GeneratedKeyHolder();
 
     String sql = "INSERT INTO schedule (todo,manager_id,pwd,registerDate,updateDate) VALUES(?,?,?,?,?)";
@@ -115,28 +111,17 @@ public class ScheduleRepository { // DB접근 관련 기능 수행하는 클래�
 
   public Schedule update(Schedule schedule, ScheduleRequestDto requestDto) {
     String time = util.currentTime();
-    if (schedule == null) {
-      throw new IllegalArgumentException("해당 ID의 일정이 존재하지 않습니다.");
-    } else if (requestDto.getPwd()
-        .equals(schedule.getPwd())) {
       String sql = "UPDATE schedule SET manager_id = ?, todo = ? , updateDate = ? WHERE id = ?";
-      jdbcTemplate.update(sql, requestDto.getManagerId(), requestDto.getTodo(), time, schedule.getId());
+      jdbcTemplate.update(sql, requestDto.getManagerId(), requestDto.getTodo(), time,
+          schedule.getId());
       schedule.setUpdateDate(time);
       return schedule;
-    } else {
-      throw new IllegalArgumentException("비밀번호가 틀립니다");
-    }
   }
 
-  public int delete(ScheduleRequestDto requestDto, Schedule schedule){
-    if (schedule != null & requestDto.getPwd()
-        .equals(schedule.getPwd())) {
+  public int delete(ScheduleRequestDto requestDto, Schedule schedule) {
       String sql = "DELETE FROM schedule WHERE id = ?";
       jdbcTemplate.update(sql, schedule.getId());
       return schedule.getId();
-    } else {
-      throw new IllegalArgumentException("해당 ID의 일정이 존재하지 않습니다.");
-    }
   }
 
   public void setManagerName(ScheduleResponseDto responseDto, int id) {
@@ -145,6 +130,7 @@ public class ScheduleRepository { // DB접근 관련 기능 수행하는 클래�
             "SELECT m.name FROM schedule s JOIN manager m on s.manager_id = m.id WHERE m.id = ? GROUP BY m.name",
             String.class, id));
   }
+
   public boolean managerExists(int managerId) {
     String sql = "SELECT COUNT(*) FROM manager WHERE id = ?";
     Integer count = jdbcTemplate.queryForObject(sql, Integer.class, managerId);

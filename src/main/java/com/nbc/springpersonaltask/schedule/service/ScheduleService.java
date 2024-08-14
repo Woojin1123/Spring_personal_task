@@ -4,6 +4,7 @@ import com.nbc.springpersonaltask.schedule.dto.ScheduleRequestDto;
 import com.nbc.springpersonaltask.schedule.dto.ScheduleResponseDto;
 import com.nbc.springpersonaltask.schedule.entity.Schedule;
 import com.nbc.springpersonaltask.schedule.repository.ScheduleRepository;
+import com.nbc.springpersonaltask.schedule.util.util;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -28,8 +29,11 @@ public class ScheduleService { // 서비스에서 repository를 이용해 기능
         .length() < 8) {
       throw new IllegalArgumentException("비밀번호가 너무 짧습니다.");
     } else {
+      String time = util.currentTime();
       Schedule schedule = new Schedule(requestDto);
       Schedule saveSchedule = scheduleRepository.save(schedule);
+      saveSchedule.setRegisterDate(time);
+      saveSchedule.setUpdateDate(time);
       ScheduleResponseDto responseDto = new ScheduleResponseDto(saveSchedule);
       scheduleRepository.setManagerName(responseDto, responseDto.getManagerId());
       return responseDto;
@@ -50,15 +54,27 @@ public class ScheduleService { // 서비스에서 repository를 이용해 기능
 
   public ScheduleResponseDto updateSchedule(int id, ScheduleRequestDto requestDto) {
     Schedule schedule = scheduleRepository.findById(id);
-    schedule = scheduleRepository.update(schedule, requestDto);
-    ScheduleResponseDto responseDto = new ScheduleResponseDto(schedule);
-    scheduleRepository.setManagerName(responseDto, responseDto.getManagerId());
-    return responseDto;
+    if (schedule == null) {
+      throw new IllegalArgumentException("해당 ID의 일정이 존재하지 않습니다.");
+    }else if(requestDto.getPwd()
+        .equals(schedule.getPwd())){
+      schedule = scheduleRepository.update(schedule, requestDto);
+      ScheduleResponseDto responseDto = new ScheduleResponseDto(schedule);
+      scheduleRepository.setManagerName(responseDto, responseDto.getManagerId());
+      return responseDto;
+    }  else {
+      throw new IllegalArgumentException("비밀번호가 틀립니다");
+    }
   }
 
   public int deleteSchedule(int id, ScheduleRequestDto requestDto) {
     Schedule schedule = scheduleRepository.findById(id);
-    return scheduleRepository.delete(requestDto, schedule);
+    if (schedule != null & requestDto.getPwd()
+        .equals(schedule.getPwd())) {
+      return scheduleRepository.delete(requestDto, schedule);
+    }else {
+      throw new IllegalArgumentException("해당 ID의 일정이 존재하지 않습니다.");
+    }
   }
 
   private void setManagerName(ScheduleResponseDto responseDto, int id) {
