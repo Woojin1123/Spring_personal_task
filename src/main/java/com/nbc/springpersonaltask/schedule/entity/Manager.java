@@ -9,13 +9,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Manager {
-    private int id;
-    private String name;
-    private String email;
-    private String registerDate;
-    private String updateDate;
-    public Manager(ManagerRequestDto requestDto) {
-        this.name = requestDto.getName();
-        this.email = requestDto.getEmail();
-    }
+
+  private int id;
+  private String name;
+  private String email;
+  private String registerDate;
+  private String updateDate;
+
+  public Manager(ManagerRequestDto requestDto) {
+    this.name = requestDto.getName();
+    this.email = requestDto.getEmail();
+  }
 }
