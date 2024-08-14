@@ -1,6 +1,6 @@
-package com.nbc.springpersonaltask.schedule.entity;
+package com.nbc.springpersonaltask.todo.entity;
 
-import com.nbc.springpersonaltask.schedule.dto.ScheduleRequestDto;
+import com.nbc.springpersonaltask.todo.dto.ScheduleRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

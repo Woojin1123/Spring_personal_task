@@ -1,10 +1,10 @@
-package com.nbc.springpersonaltask.schedule.service;
+package com.nbc.springpersonaltask.todo.service;
 
-import com.nbc.springpersonaltask.schedule.dto.ScheduleRequestDto;
-import com.nbc.springpersonaltask.schedule.dto.ScheduleResponseDto;
-import com.nbc.springpersonaltask.schedule.entity.Schedule;
-import com.nbc.springpersonaltask.schedule.repository.ScheduleRepository;
-import com.nbc.springpersonaltask.schedule.util.util;
+import com.nbc.springpersonaltask.todo.dto.ScheduleRequestDto;
+import com.nbc.springpersonaltask.todo.dto.ScheduleResponseDto;
+import com.nbc.springpersonaltask.todo.entity.Schedule;
+import com.nbc.springpersonaltask.todo.repository.ScheduleRepository;
+import com.nbc.springpersonaltask.todo.util.util;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -31,10 +31,10 @@ public class ScheduleService { // 서비스에서 repository를 이용해 기능
     } else {
       String time = util.currentTime();
       Schedule schedule = new Schedule(requestDto);
-      Schedule saveSchedule = scheduleRepository.save(schedule);
-      saveSchedule.setRegisterDate(time);
-      saveSchedule.setUpdateDate(time);
-      ScheduleResponseDto responseDto = new ScheduleResponseDto(saveSchedule);
+      schedule.setUpdateDate(time);
+      schedule.setRegisterDate(time);
+      scheduleRepository.save(schedule);
+      ScheduleResponseDto responseDto = new ScheduleResponseDto(schedule);
       scheduleRepository.setManagerName(responseDto, responseDto.getManagerId());
       return responseDto;
     }
@@ -56,15 +56,18 @@ public class ScheduleService { // 서비스에서 repository를 이용해 기능
     Schedule schedule = scheduleRepository.findById(id);
     if (schedule == null) {
       throw new IllegalArgumentException("해당 ID의 일정이 존재하지 않습니다.");
-    }else if(requestDto.getPwd()
-        .equals(schedule.getPwd())){
-      schedule = scheduleRepository.update(schedule, requestDto);
-      ScheduleResponseDto responseDto = new ScheduleResponseDto(schedule);
-      scheduleRepository.setManagerName(responseDto, responseDto.getManagerId());
-      return responseDto;
-    }  else {
+    }
+    if (!scheduleRepository.managerExists(requestDto.getManagerId())) {
+      throw new IllegalArgumentException("해당 매니저가 존재하지 않습니다.");
+    }
+    if (!requestDto.getPwd()
+        .equals(schedule.getPwd())) {
       throw new IllegalArgumentException("비밀번호가 틀립니다");
     }
+    scheduleRepository.update(schedule, requestDto);
+    ScheduleResponseDto responseDto = new ScheduleResponseDto(schedule);
+    scheduleRepository.setManagerName(responseDto, responseDto.getManagerId());
+    return responseDto;
   }
 
   public int deleteSchedule(int id, ScheduleRequestDto requestDto) {
@@ -72,7 +75,7 @@ public class ScheduleService { // 서비스에서 repository를 이용해 기능
     if (schedule != null & requestDto.getPwd()
         .equals(schedule.getPwd())) {
       return scheduleRepository.delete(requestDto, schedule);
-    }else {
+    } else {
       throw new IllegalArgumentException("해당 ID의 일정이 존재하지 않습니다.");
     }
   }

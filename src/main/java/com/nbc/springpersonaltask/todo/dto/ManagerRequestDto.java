@@ -1,4 +1,4 @@
-package com.nbc.springpersonaltask.schedule.dto;
+package com.nbc.springpersonaltask.todo.dto;
 
 import lombok.Getter;
 

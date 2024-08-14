@@ -1,11 +1,11 @@
-package com.nbc.springpersonaltask.schedule.controller;
+package com.nbc.springpersonaltask.todo.controller;
 
 
 
-import com.nbc.springpersonaltask.schedule.dto.ManagerRequestDto;
-import com.nbc.springpersonaltask.schedule.dto.ManagerResponseDto;
-import com.nbc.springpersonaltask.schedule.entity.Manager;
-import com.nbc.springpersonaltask.schedule.util.util;
+import com.nbc.springpersonaltask.todo.dto.ManagerRequestDto;
+import com.nbc.springpersonaltask.todo.dto.ManagerResponseDto;
+import com.nbc.springpersonaltask.todo.entity.Manager;
+import com.nbc.springpersonaltask.todo.util.util;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

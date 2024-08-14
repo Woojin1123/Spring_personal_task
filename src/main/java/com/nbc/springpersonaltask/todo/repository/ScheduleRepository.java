@@ -1,9 +1,9 @@
-package com.nbc.springpersonaltask.schedule.repository;
+package com.nbc.springpersonaltask.todo.repository;
 
-import com.nbc.springpersonaltask.schedule.dto.ScheduleRequestDto;
-import com.nbc.springpersonaltask.schedule.dto.ScheduleResponseDto;
-import com.nbc.springpersonaltask.schedule.entity.Schedule;
-import com.nbc.springpersonaltask.schedule.util.util;
+import com.nbc.springpersonaltask.todo.dto.ScheduleRequestDto;
+import com.nbc.springpersonaltask.todo.dto.ScheduleResponseDto;
+import com.nbc.springpersonaltask.todo.entity.Schedule;
+import com.nbc.springpersonaltask.todo.util.util;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -109,13 +109,12 @@ public class ScheduleRepository { // DB접근 관련 기능 수행하는 클래�
     }, id);
   }
 
-  public Schedule update(Schedule schedule, ScheduleRequestDto requestDto) {
+  public void update(Schedule schedule, ScheduleRequestDto requestDto) {
     String time = util.currentTime();
-      String sql = "UPDATE schedule SET manager_id = ?, todo = ? , updateDate = ? WHERE id = ?";
-      jdbcTemplate.update(sql, requestDto.getManagerId(), requestDto.getTodo(), time,
-          schedule.getId());
-      schedule.setUpdateDate(time);
-      return schedule;
+    String sql = "UPDATE schedule SET manager_id = ?, todo = ? , updateDate = ? WHERE id = ?";
+    jdbcTemplate.update(sql, requestDto.getManagerId(), requestDto.getTodo(), time,
+        schedule.getId());
+    schedule.setUpdateDate(time);
   }
 
   public int delete(ScheduleRequestDto requestDto, Schedule schedule) {

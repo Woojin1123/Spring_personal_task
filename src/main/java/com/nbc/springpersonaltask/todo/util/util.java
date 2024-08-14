@@ -1,4 +1,4 @@
-package com.nbc.springpersonaltask.schedule.util;
+package com.nbc.springpersonaltask.todo.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

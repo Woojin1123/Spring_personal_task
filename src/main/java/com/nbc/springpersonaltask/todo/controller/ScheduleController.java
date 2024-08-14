@@ -1,9 +1,11 @@
-package com.nbc.springpersonaltask.schedule.controller;
+package com.nbc.springpersonaltask.todo.controller;
 
-import com.nbc.springpersonaltask.schedule.dto.ScheduleRequestDto;
-import com.nbc.springpersonaltask.schedule.dto.ScheduleResponseDto;
-import com.nbc.springpersonaltask.schedule.service.ScheduleService;
+import com.nbc.springpersonaltask.todo.dto.ScheduleRequestDto;
+import com.nbc.springpersonaltask.todo.dto.ScheduleResponseDto;
+import com.nbc.springpersonaltask.todo.service.ScheduleService;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,17 +30,19 @@ public class ScheduleController { // Http 요청에 따라 service 호출
   }
 
   @PostMapping//create니까 Post로 전송
-  public ScheduleResponseDto createSchedule(@RequestBody ScheduleRequestDto requestDto) {
-    return scheduleService.createSchedule(requestDto);
+  public ResponseEntity createSchedule(@RequestBody ScheduleRequestDto requestDto) {
+    ScheduleResponseDto responseDto = scheduleService.createSchedule(requestDto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
   }
 
   @GetMapping
-  public List<ScheduleResponseDto> getSchedules(
+  public ResponseEntity getSchedules(
       @RequestParam(name = "managerId", required = false) Integer managerId,
       @RequestParam(name = "updateDate", required = false) String updateDate,
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "pagesize", defaultValue = "10") int pagesize) {
-    return scheduleService.getSchedules(managerId, updateDate, page, pagesize);
+    List<ScheduleResponseDto> responseDto = scheduleService.getSchedules(managerId, updateDate, page, pagesize);
+    return ResponseEntity.status(200).body(responseDto);
   }
 
   @GetMapping("/{id}") //선택한 일정 조회
