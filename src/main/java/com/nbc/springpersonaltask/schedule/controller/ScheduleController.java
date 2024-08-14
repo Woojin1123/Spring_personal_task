@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/todolist")
+@RequestMapping("/schedules")
 public class ScheduleController { // Http 요청에 따라 service 호출
 
   private final JdbcTemplate jdbcTemplate;
@@ -27,12 +27,12 @@ public class ScheduleController { // Http 요청에 따라 service 호출
     this.scheduleService = new ScheduleService(jdbcTemplate);
   }
 
-  @PostMapping("/schedules") //create니까 Post로 전송
+  @PostMapping//create니까 Post로 전송
   public ScheduleResponseDto createSchedule(@RequestBody ScheduleRequestDto requestDto) {
     return scheduleService.createSchedule(requestDto);
   }
 
-  @GetMapping("/schedules")
+  @GetMapping
   public List<ScheduleResponseDto> getSchedules(
       @RequestParam(name = "managerId", required = false) Integer managerId,
       @RequestParam(name = "updateDate", required = false) String updateDate,
@@ -41,18 +41,18 @@ public class ScheduleController { // Http 요청에 따라 service 호출
     return scheduleService.getSchedules(managerId, updateDate, page, pagesize);
   }
 
-  @GetMapping("/schedules/{id}") //선택한 일정 조회
+  @GetMapping("/{id}") //선택한 일정 조회
   public ScheduleResponseDto choiceSchedule(@PathVariable int id) {
     return scheduleService.choiceSchedule(id);
   }
 
-  @PutMapping("/schedules/{id}")
+  @PutMapping("/{id}")
   public ScheduleResponseDto updateSchedule(@PathVariable int id,
       @RequestBody ScheduleRequestDto requestDto) {
     return scheduleService.updateSchedule(id, requestDto);
   }
 
-  @DeleteMapping("/schedules/{id}")
+  @DeleteMapping("/{id}")
   public int deleteSchedule(@PathVariable int id, @RequestBody ScheduleRequestDto requestDto) {
     return scheduleService.deleteSchedule(id, requestDto);
   }

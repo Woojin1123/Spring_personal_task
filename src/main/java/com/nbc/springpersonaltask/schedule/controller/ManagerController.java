@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/todolist")
+@RequestMapping("/managers")
 public class ManagerController {
 
   private final JdbcTemplate jdbcTemplate;//spring의 bean에 등록되어있어 직접 객체를 생성하지 않아도 스프링 컨테이너에 의해 관리됨
@@ -33,7 +33,7 @@ public class ManagerController {
     this.jdbcTemplate = jdbcTemplate;
   }
 
-  @PostMapping("/managers")
+  @PostMapping
   public ManagerResponseDto createManager(@RequestBody ManagerRequestDto requestDto) {
     ManagerResponseDto responseDto;
     Manager manager = new Manager(requestDto);
@@ -67,7 +67,7 @@ public class ManagerController {
     }
   }
 
-  @GetMapping("/managers")
+  @GetMapping
   public List<ManagerResponseDto> getManagers() {
     String sql = "SELECT * FROM manager WHERE true";
     return jdbcTemplate.query(sql, new RowMapper<ManagerResponseDto>() {
@@ -83,7 +83,7 @@ public class ManagerController {
     });
   }
 
-  @GetMapping("/managers/{id}")
+  @GetMapping("/{id}")
   public ManagerResponseDto getManagersById(@PathVariable int id) {
     String sql = "SELECT * FROM manager WHERE true";
     sql += " AND id = ?";
