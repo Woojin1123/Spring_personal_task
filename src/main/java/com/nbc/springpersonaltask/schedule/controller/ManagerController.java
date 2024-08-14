@@ -1,10 +1,11 @@
 package com.nbc.springpersonaltask.schedule.controller;
 
-import static com.nbc.springpersonaltask.schedule.controller.ScheduleController.currentTime;
+
 
 import com.nbc.springpersonaltask.schedule.dto.ManagerRequestDto;
 import com.nbc.springpersonaltask.schedule.dto.ManagerResponseDto;
 import com.nbc.springpersonaltask.schedule.entity.Manager;
+import com.nbc.springpersonaltask.schedule.util.util;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,8 +37,8 @@ public class ManagerController {
   public ManagerResponseDto createManager(@RequestBody ManagerRequestDto requestDto) {
     ManagerResponseDto responseDto;
     Manager manager = new Manager(requestDto);
-    manager.setUpdateDate(currentTime());
-    manager.setRegisterDate(currentTime());
+    manager.setUpdateDate(util.currentTime());
+    manager.setRegisterDate(util.currentTime());
     KeyHolder keyholder = new GeneratedKeyHolder();
     String sql = "INSERT INTO manager (name,email,registerDate,updateDate) SELECT ?,?,?,?    " +
         "WHERE NOT EXISTS" +
