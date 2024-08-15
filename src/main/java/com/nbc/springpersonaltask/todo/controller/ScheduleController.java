@@ -65,7 +65,7 @@
     @DeleteMapping("/{id}")
     public ResponseEntity deleteSchedule(@PathVariable int id,
         @RequestBody ScheduleRequestDto requestDto) {
-      return ResponseEntity.status(HttpStatus.NO_CONTENT)
+      return ResponseEntity.status(HttpStatus.OK)
           .body(scheduleService.deleteSchedule(id, requestDto));
     }
 
