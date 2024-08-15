@@ -37,11 +37,11 @@ public class ScheduleController { // Http 요청에 따라 service 호출
 
   @GetMapping
   public ResponseEntity getSchedules(
-      @RequestParam(name = "managerId", required = false) Integer managerId,
+      @RequestParam(name = "manager", required = false) String managerName,
       @RequestParam(name = "updateDate", required = false) String updateDate,
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "pagesize", defaultValue = "10") int pagesize) {
-    List<ScheduleResponseDto> responseDto = scheduleService.getSchedules(managerId, updateDate, page, pagesize);
+    List<ScheduleResponseDto> responseDto = scheduleService.getSchedules(managerName, updateDate, page, pagesize);
     return ResponseEntity.status(200).body(responseDto);
   }
 

@@ -3,7 +3,6 @@ package com.nbc.springpersonaltask.todo.repository;
 import com.nbc.springpersonaltask.todo.dto.ScheduleRequestDto;
 import com.nbc.springpersonaltask.todo.dto.ScheduleResponseDto;
 import com.nbc.springpersonaltask.todo.entity.Schedule;
-import com.nbc.springpersonaltask.todo.util.util;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -46,15 +45,16 @@ public class ScheduleRepository { // DB접근 관련 기능 수행하는 클래�
     return schedule;
   }
 
-  public List<ScheduleResponseDto> findAll(Integer managerId, String updateDate, int page,
+
+  public List<ScheduleResponseDto> findAll(String managerName, String updateDate, int page,
       int pagesize) {
     String sql = "SELECT s.id, s.todo, s.registerDate, s.updateDate, m.id, m.name " +
         "FROM schedule s " +
         "JOIN manager m on m.id = s.manager_id WHERE true";
     List<String> param = new ArrayList<>();
-    if (managerId != null) {
-      sql = sql + " " + "AND s.manager_id = ?";
-      param.add(managerId.toString());
+    if (managerName != null) {
+      sql = sql + " " + "AND m.manager_id = ?";
+      param.add(managerName.toString());
     }
     if (updateDate != null) {
       sql = sql + " " + "AND s.updateDate LIKE ?";
@@ -110,11 +110,9 @@ public class ScheduleRepository { // DB접근 관련 기능 수행하는 클래�
   }
 
   public void update(Schedule schedule, ScheduleRequestDto requestDto) {
-    String time = util.currentTime();
     String sql = "UPDATE schedule SET manager_id = ?, todo = ? , updateDate = ? WHERE id = ?";
-    jdbcTemplate.update(sql, requestDto.getManagerId(), requestDto.getTodo(), time,
+    jdbcTemplate.update(sql, requestDto.getManagerId(), requestDto.getTodo(), schedule.getUpdateDate(),
         schedule.getId());
-    schedule.setUpdateDate(time);
   }
 
   public int delete(ScheduleRequestDto requestDto, Schedule schedule) {
