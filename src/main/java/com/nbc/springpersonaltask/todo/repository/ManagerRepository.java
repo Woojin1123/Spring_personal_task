@@ -2,6 +2,8 @@ package com.nbc.springpersonaltask.todo.repository;
 
 import com.nbc.springpersonaltask.todo.dto.ManagerResponseDto;
 import com.nbc.springpersonaltask.todo.entity.Manager;
+import com.nbc.springpersonaltask.todo.exception.ErrorCode;
+import com.nbc.springpersonaltask.todo.exception.custom.ManagerAlreadyExistException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,7 +44,7 @@ public class ManagerRepository {
           .intValue();
       manager.setId(id);
     } else {
-      throw new RuntimeException("동일인물이 이미 존재합니다.");
+      throw new ManagerAlreadyExistException(ErrorCode.MANAGER_ALREADY_EXIST);
     }
 
   }

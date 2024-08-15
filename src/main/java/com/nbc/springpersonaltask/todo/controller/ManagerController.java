@@ -4,6 +4,7 @@ package com.nbc.springpersonaltask.todo.controller;
 import com.nbc.springpersonaltask.todo.dto.ManagerRequestDto;
 import com.nbc.springpersonaltask.todo.dto.ManagerResponseDto;
 import com.nbc.springpersonaltask.todo.service.ManagerService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class ManagerController {
   }
 
   @PostMapping
-  public ResponseEntity createManager(@RequestBody ManagerRequestDto requestDto) {
+  public ResponseEntity createManager(@Valid @RequestBody ManagerRequestDto requestDto) {
     ManagerResponseDto responseDto = managerService.createManager(requestDto);
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(responseDto);
@@ -37,12 +38,14 @@ public class ManagerController {
   @GetMapping
   public ResponseEntity getManagers() {
     List<ManagerResponseDto> responseDtos = managerService.getManager();
-    return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(responseDtos);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity getManagerById(@PathVariable int id) {
     ManagerResponseDto responseDto = managerService.getManagerById(id);
-    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(responseDto);
   }
 }

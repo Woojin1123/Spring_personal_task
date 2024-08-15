@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class util {
+
   public static String currentTime() {
     Date today = new Date();
     Locale currentLocale = new Locale("KOREAN", "KOREA");

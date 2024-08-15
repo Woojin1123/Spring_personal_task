@@ -111,14 +111,15 @@ public class ScheduleRepository { // DB접근 관련 기능 수행하는 클래�
 
   public void update(Schedule schedule, ScheduleRequestDto requestDto) {
     String sql = "UPDATE schedule SET manager_id = ?, todo = ? , updateDate = ? WHERE id = ?";
-    jdbcTemplate.update(sql, requestDto.getManagerId(), requestDto.getTodo(), schedule.getUpdateDate(),
+    jdbcTemplate.update(sql, requestDto.getManagerId(), requestDto.getTodo(),
+        schedule.getUpdateDate(),
         schedule.getId());
   }
 
   public int delete(ScheduleRequestDto requestDto, Schedule schedule) {
-      String sql = "DELETE FROM schedule WHERE id = ?";
-      jdbcTemplate.update(sql, schedule.getId());
-      return schedule.getId();
+    String sql = "DELETE FROM schedule WHERE id = ?";
+    jdbcTemplate.update(sql, schedule.getId());
+    return schedule.getId();
   }
 
   public void setManagerName(ScheduleResponseDto responseDto, int id) {

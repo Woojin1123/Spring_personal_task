@@ -3,6 +3,7 @@ package com.nbc.springpersonaltask.todo.controller;
 import com.nbc.springpersonaltask.todo.dto.ScheduleRequestDto;
 import com.nbc.springpersonaltask.todo.dto.ScheduleResponseDto;
 import com.nbc.springpersonaltask.todo.service.ScheduleService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class ScheduleController { // Http 요청에 따라 service 호출
   }
 
   @PostMapping//create니까 Post로 전송
-  public ResponseEntity createSchedule(@RequestBody ScheduleRequestDto requestDto) {
+  public ResponseEntity createSchedule(@Valid @RequestBody ScheduleRequestDto requestDto) {
     ScheduleResponseDto responseDto = scheduleService.createSchedule(requestDto);
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(responseDto);
@@ -50,18 +51,22 @@ public class ScheduleController { // Http 요청에 따라 service 호출
 
   @GetMapping("/{id}") //선택한 일정 조회
   public ResponseEntity choiceSchedule(@PathVariable int id) {
-    return ResponseEntity.status(HttpStatus.OK).body(scheduleService.choiceSchedule(id));
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(scheduleService.choiceSchedule(id));
   }
 
   @PutMapping("/{id}")
   public ResponseEntity updateSchedule(@PathVariable int id,
       @RequestBody ScheduleRequestDto requestDto) {
-    return ResponseEntity.status(HttpStatus.OK).body(scheduleService.updateSchedule(id, requestDto));
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(scheduleService.updateSchedule(id, requestDto));
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity deleteSchedule(@PathVariable int id, @RequestBody ScheduleRequestDto requestDto) {
-    return ResponseEntity.status(HttpStatus.OK).body(scheduleService.deleteSchedule(id, requestDto));
+  public ResponseEntity deleteSchedule(@PathVariable int id,
+      @RequestBody ScheduleRequestDto requestDto) {
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(scheduleService.deleteSchedule(id, requestDto));
   }
 
 }

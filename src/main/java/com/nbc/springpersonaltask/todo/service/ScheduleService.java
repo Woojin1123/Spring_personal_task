@@ -50,7 +50,7 @@ public class ScheduleService { // 서비스에서 repository를 이용해 기능
 
   public ScheduleResponseDto choiceSchedule(int id) {
     Schedule schedule = scheduleRepository.findById(id);
-    if(schedule == null){
+    if (schedule == null) {
       throw new NullPointerException("해당 일정이 존재하지 않습니다.");
     }
     ScheduleResponseDto responseDto = new ScheduleResponseDto(schedule);

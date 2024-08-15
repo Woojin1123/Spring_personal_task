@@ -26,3 +26,6 @@ CREATE TABLE manager
 ALTER TABLE schedule ADD COLUMN manager_id int;
 -- schedule에서 이름 대신 ID번호로 일정 저장
 ALTER TABLE schedule DROP COLUMN manager;
+
+-- 할일 200자로 변경
+ALTER TABLE schedule MODIFY todo varchar(200); 
