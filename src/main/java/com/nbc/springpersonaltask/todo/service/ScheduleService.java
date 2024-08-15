@@ -34,6 +34,7 @@ public class ScheduleService { // 서비스에서 repository를 이용해 기능
     } else {
       String time = util.currentTime();
       Schedule schedule = new Schedule(requestDto);
+      schedule.setPwd(util.encrypt(requestDto.getPwd()));
       schedule.setUpdateDate(time);
       schedule.setRegisterDate(time);
       scheduleRepository.save(schedule);
@@ -66,7 +67,8 @@ public class ScheduleService { // 서비스에서 repository를 이용해 기능
     if (!scheduleRepository.managerExists(requestDto.getManagerId())) {
       throw new NullPointerException("해당 매니저가 존재하지 않습니다.");
     }
-    if (!requestDto.getPwd()
+
+    if (!util.encrypt(requestDto.getPwd())
         .equals(schedule.getPwd())) {
       throw new PasswordIncorrectException(ErrorCode.INCORRECT_PASSWORD);
     }
@@ -81,11 +83,14 @@ public class ScheduleService { // 서비스에서 repository를 이용해 기능
 
   public int deleteSchedule(int id, ScheduleRequestDto requestDto) {
     Schedule schedule = scheduleRepository.findById(id);
-    if (schedule != null & requestDto.getPwd()
+     if(schedule == null) {
+      throw new NullPointerException("해당 일정이 존재하지 않습니다.");
+    }
+    if (util.encrypt(requestDto.getPwd())
         .equals(schedule.getPwd())) {
       return scheduleRepository.delete(requestDto, schedule);
-    } else {
-      throw new NullPointerException("해당 일정이 존재하지 않습니다.");
+    }else{
+      throw new PasswordIncorrectException(ErrorCode.INCORRECT_PASSWORD);
     }
   }
 }

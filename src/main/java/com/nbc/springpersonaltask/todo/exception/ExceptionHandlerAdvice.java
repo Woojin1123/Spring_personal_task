@@ -2,6 +2,7 @@ package com.nbc.springpersonaltask.todo.exception;
 
 import com.nbc.springpersonaltask.todo.exception.custom.ManagerAlreadyExistException;
 import com.nbc.springpersonaltask.todo.exception.custom.PasswordIncorrectException;
+import java.security.NoSuchAlgorithmException;
 import java.util.InputMismatchException;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -71,5 +72,10 @@ public class ExceptionHandlerAdvice {
             .getHttpStatus())
         .body(e.getErrorCode()
             .getMessage());
+  }
+
+  @ExceptionHandler(NoSuchAlgorithmException.class)
+  public ResponseEntity handleNoSuchAlgorithmException(NoSuchAlgorithmException e){
+    return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("암호화 사용 불가능");
   }
 }
