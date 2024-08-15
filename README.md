@@ -3,4 +3,5 @@ https://documenter.getpostman.com/view/37561020/2sA3s1psRh
 
 # ERD diagram
 
-![image](https://github.com/user-attachments/assets/7f6b8b52-0baf-4a26-83ea-e0719e48b1be)
+![image](https://github.com/user-attachments/assets/c78c2733-d3b2-4ff6-8564-9161b7908bc9)
+
