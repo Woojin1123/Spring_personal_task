@@ -32,7 +32,8 @@ public class ScheduleController { // Http 요청에 따라 service 호출
   @PostMapping//create니까 Post로 전송
   public ResponseEntity createSchedule(@RequestBody ScheduleRequestDto requestDto) {
     ScheduleResponseDto responseDto = scheduleService.createSchedule(requestDto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(responseDto);
   }
 
   @GetMapping
@@ -41,24 +42,26 @@ public class ScheduleController { // Http 요청에 따라 service 호출
       @RequestParam(name = "updateDate", required = false) String updateDate,
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "pagesize", defaultValue = "10") int pagesize) {
-    List<ScheduleResponseDto> responseDto = scheduleService.getSchedules(managerName, updateDate, page, pagesize);
-    return ResponseEntity.status(200).body(responseDto);
+    List<ScheduleResponseDto> responseDto = scheduleService.getSchedules(managerName, updateDate,
+        page, pagesize);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(responseDto);
   }
 
   @GetMapping("/{id}") //선택한 일정 조회
-  public ScheduleResponseDto choiceSchedule(@PathVariable int id) {
-    return scheduleService.choiceSchedule(id);
+  public ResponseEntity choiceSchedule(@PathVariable int id) {
+    return ResponseEntity.status(HttpStatus.OK).body(scheduleService.choiceSchedule(id));
   }
 
   @PutMapping("/{id}")
-  public ScheduleResponseDto updateSchedule(@PathVariable int id,
+  public ResponseEntity updateSchedule(@PathVariable int id,
       @RequestBody ScheduleRequestDto requestDto) {
-    return scheduleService.updateSchedule(id, requestDto);
+    return ResponseEntity.status(HttpStatus.OK).body(scheduleService.updateSchedule(id, requestDto));
   }
 
   @DeleteMapping("/{id}")
-  public int deleteSchedule(@PathVariable int id, @RequestBody ScheduleRequestDto requestDto) {
-    return scheduleService.deleteSchedule(id, requestDto);
+  public ResponseEntity deleteSchedule(@PathVariable int id, @RequestBody ScheduleRequestDto requestDto) {
+    return ResponseEntity.status(HttpStatus.OK).body(scheduleService.deleteSchedule(id, requestDto));
   }
 
 }

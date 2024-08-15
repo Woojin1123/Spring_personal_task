@@ -2,6 +2,7 @@ package com.nbc.springpersonaltask.todo.exception;
 
 import com.nbc.springpersonaltask.todo.exception.custom.PasswordIncorrectException;
 import java.util.InputMismatchException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,5 +32,9 @@ public class ExceptionHandlerAdvice {
   @ExceptionHandler(NoHandlerFoundException.class)
   public ResponseEntity handleNoHandlerFoundException(NoHandlerFoundException e){
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("잘못된 조회 경로입니다.");
+  }
+  @ExceptionHandler(EmptyResultDataAccessException.class)
+  public ResponseEntity handleEmptyResultDataAccessException(EmptyResultDataAccessException e){
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 id를 가진 매니저가 없습니다.");
   }
 }
