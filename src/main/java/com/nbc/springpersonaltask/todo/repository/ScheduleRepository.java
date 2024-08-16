@@ -53,8 +53,8 @@ public class ScheduleRepository { // DB접근 관련 기능 수행하는 클래�
         "JOIN manager m on m.id = s.manager_id WHERE true";
     List<String> param = new ArrayList<>();
     if (managerName != null) {
-      sql = sql + " " + "AND m.manager_id = ?";
-      param.add(managerName.toString());
+      sql = sql + " " + "AND m.name = ?";
+      param.add(managerName);
     }
     if (updateDate != null) {
       sql = sql + " " + "AND s.updateDate LIKE ?";

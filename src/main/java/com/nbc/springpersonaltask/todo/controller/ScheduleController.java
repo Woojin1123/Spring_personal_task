@@ -39,7 +39,7 @@
 
     @GetMapping
     public ResponseEntity getSchedules(
-        @RequestParam(name = "manager", required = false) String managerName,
+        @RequestParam(name = "name", required = false) String managerName,
         @RequestParam(name = "updateDate", required = false) String updateDate,
         @RequestParam(name = "page", defaultValue = "0") int page,
         @RequestParam(name = "pagesize", defaultValue = "10") int pagesize) {
