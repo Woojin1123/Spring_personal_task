@@ -18,13 +18,13 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 public class ExceptionHandlerAdvice {
 
   @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity handleException(IllegalArgumentException e) {
+  public ResponseEntity<String> handleException(IllegalArgumentException e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body("잘못된 정보로 조회를 시도하셨습니다.");
   }
 
   @ExceptionHandler(PasswordIncorrectException.class)
-  public ResponseEntity handlePasswordIncorrectException(PasswordIncorrectException e) {
+  public ResponseEntity<String> handlePasswordIncorrectException(PasswordIncorrectException e) {
     return ResponseEntity.status(e.getErrorCode()
             .getHttpStatus())
         .body(e.getErrorCode()
@@ -32,31 +32,31 @@ public class ExceptionHandlerAdvice {
   }
 
   @ExceptionHandler(NullPointerException.class)
-  public ResponseEntity handleNullPointerException(NullPointerException e) {
+  public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(e.getMessage());
   }
 
   @ExceptionHandler(InputMismatchException.class)
-  public ResponseEntity handleInputMismatchException(InputMismatchException e) {
+  public ResponseEntity<String> handleInputMismatchException(InputMismatchException e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(e.getMessage());
   }
 
   @ExceptionHandler(NoHandlerFoundException.class)
-  public ResponseEntity handleNoHandlerFoundException(NoHandlerFoundException e) {
+  public ResponseEntity<String> handleNoHandlerFoundException(NoHandlerFoundException e) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body("잘못된 조회 경로입니다.");
   }
 
   @ExceptionHandler(EmptyResultDataAccessException.class)
-  public ResponseEntity handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
+  public ResponseEntity<String> handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body("해당 id를 가진 매니저가 없습니다.");
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+  public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
     String message = e.getBindingResult()
         .getFieldErrors()
         .stream()
@@ -67,7 +67,7 @@ public class ExceptionHandlerAdvice {
   }
 
   @ExceptionHandler(ManagerAlreadyExistException.class)
-  public ResponseEntity handleManagerAlreadyExistException(ManagerAlreadyExistException e) {
+  public ResponseEntity<String> handleManagerAlreadyExistException(ManagerAlreadyExistException e) {
     return ResponseEntity.status(e.getErrorCode()
             .getHttpStatus())
         .body(e.getErrorCode()
@@ -75,7 +75,7 @@ public class ExceptionHandlerAdvice {
   }
 
   @ExceptionHandler(NoSuchAlgorithmException.class)
-  public ResponseEntity handleNoSuchAlgorithmException(NoSuchAlgorithmException e){
+  public ResponseEntity<String> handleNoSuchAlgorithmException(NoSuchAlgorithmException e){
     return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("암호화 사용 불가능");
   }
 }

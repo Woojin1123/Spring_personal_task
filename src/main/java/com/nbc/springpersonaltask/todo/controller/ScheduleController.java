@@ -31,14 +31,14 @@
     }
 
     @PostMapping//create니까 Post로 전송
-    public ResponseEntity createSchedule(@Valid @RequestBody ScheduleRequestDto requestDto) {
+    public ResponseEntity<ScheduleResponseDto> createSchedule(@Valid @RequestBody ScheduleRequestDto requestDto) {
       ScheduleResponseDto responseDto = scheduleService.createSchedule(requestDto);
       return ResponseEntity.status(HttpStatus.CREATED)
           .body(responseDto);
     }
 
     @GetMapping
-    public ResponseEntity getSchedules(
+    public ResponseEntity<List<ScheduleResponseDto>> getSchedules(
         @RequestParam(name = "name", required = false) String managerName,
         @RequestParam(name = "updateDate", required = false) String updateDate,
         @RequestParam(name = "page", defaultValue = "0") int page,
@@ -50,21 +50,21 @@
     }
 
     @GetMapping("/{id}") //선택한 일정 조회
-    public ResponseEntity choiceSchedule(@PathVariable int id) {
+    public ResponseEntity<ScheduleResponseDto> choiceSchedule(@PathVariable int id) {
       return ResponseEntity.status(HttpStatus.OK)
           .body(scheduleService.choiceSchedule(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateSchedule(@PathVariable int id,
-        @RequestBody ScheduleRequestDto requestDto) {
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable int id,
+       @Valid @RequestBody ScheduleRequestDto requestDto) {
       return ResponseEntity.status(HttpStatus.OK)
           .body(scheduleService.updateSchedule(id, requestDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteSchedule(@PathVariable int id,
-        @RequestBody ScheduleRequestDto requestDto) {
+    public ResponseEntity<Integer> deleteSchedule(@PathVariable int id,
+       @Valid @RequestBody ScheduleRequestDto requestDto) {
       return ResponseEntity.status(HttpStatus.OK)
           .body(scheduleService.deleteSchedule(id, requestDto));
     }
